@@ -6,7 +6,7 @@ import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
-  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 0 }, maskColorB = { r: 255, g: 255, b: 255, a: 255 } } = {}) {
+  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 255 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
     this.pose = null
@@ -34,7 +34,7 @@ class PoseDetector {
 
     poseDetection
       .createDetector(poseDetection.SupportedModels.BlazePose, {
-        runtime: 'mediapipe',
+        runtime: 'tfjs',
         modelType: 'full',
         enableSegmentation: true,
         maxPoses: 1,
