@@ -5,42 +5,6 @@ import * as bodySegmentation from '@tensorflow-models/body-segmentation'
 import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
-const keypointsNames = {
-  0: 'nose',
-  1: 'rightEyeInner',
-  2: 'rightEye',
-  3: 'rightEyeOuter',
-  4: 'leftEyeInner',
-  5: 'leftEye',
-  6: 'leftEyeOuter',
-  7: 'rightEar',
-  8: 'leftEar',
-  9: 'mouthRight',
-  10: 'mouthLeft',
-  11: 'rightShoulder',
-  12: 'leftShoulder',
-  13: 'rightElbow',
-  14: 'leftElbow',
-  15: 'rightWrist',
-  16: 'leftWrist',
-  17: 'rightPinky',
-  18: 'leftPinky',
-  19: 'rightIndex',
-  20: 'leftIndex',
-  21: 'rightThumb',
-  22: 'leftThumb',
-  23: 'rightHip',
-  24: 'leftHip',
-  25: 'rightKnee',
-  26: 'leftKnee',
-  27: 'rightAnkle',
-  28: 'leftAnkle',
-  29: 'rightHeel',
-  30: 'leftHeel',
-  31: 'rightFootIndex',
-  32: 'leftFootIndex',
-}
-
 class PoseDetector {
   constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 0 }, maskColorB = { r: 255, g: 255, b: 255, a: 255 } } = {}) {
     this.isWebcamLoaded = false
@@ -120,16 +84,14 @@ class PoseDetector {
     try {
       const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
-
-        console.log(poses[0].keypoints)
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
           if (kp.score > 0.8) {
-            acc[kp.name] = kp
-            if (this.flipHorizontal) acc[kp.name].x = width - kp.x
+            const camelCaseName = toCamelCase(kp.name) // Convierte el nombre a camelCase
+            acc[camelCaseName] = kp
+            if (this.flipHorizontal) acc[camelCaseName].x = width - kp.x
           }
           return acc
         }, {})
-
 
         const segmentation = poses[0].segmentation
         if (segmentation) {
@@ -149,6 +111,10 @@ class PoseDetector {
       console.error('Error detecting pose:', error)
     }
   }
+}
+
+function toCamelCase(s) {
+  return s.replace(/(_\w)/g, (m) => m[1].toUpperCase())
 }
 
 window.PoseDetector = PoseDetector
