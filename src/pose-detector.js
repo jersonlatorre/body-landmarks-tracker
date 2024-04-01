@@ -120,17 +120,16 @@ class PoseDetector {
     try {
       const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
+
+        console.log(poses[0].keypoints)
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
-          const keypointName = keypointsNames[kp.id]
           if (kp.score > 0.8) {
-            acc[keypointName] = {
-              ...kp,
-              name: keypointName,
-            }
-            if (this.flipHorizontal) acc[keypointName].x = width - kp.x
+            acc[kp.name] = kp
+            if (this.flipHorizontal) acc[kp.name].x = width - kp.x
           }
           return acc
         }, {})
+
 
         const segmentation = poses[0].segmentation
         if (segmentation) {
