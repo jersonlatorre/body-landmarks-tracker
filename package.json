@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "parcel build ./src/pose-detector.js --dist-dir ./dist",
-    "publish-npm": "git add . && git commit -m 'build' && git push && parcel build ./src/pose-detector.js --dist-dir ./dist && npm version patch && npm publish"
+    "publish-npm": "parcel build ./src/pose-detector.js --dist-dir ./dist && git add . && git commit -m 'build' && git push && npm version patch && npm publish"
   },
   "type": "module",
   "targets": {
