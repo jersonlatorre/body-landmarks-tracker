@@ -51,9 +51,9 @@ class PoseDetector {
   drawWebcam(x, y, w, h) {
     push()
     if (this.flipHorizontal) {
-      translate(x + w, y)
+      translate(width, 0)
       scale(-1, 1)
-      image(this.webcam, 0, 0, -w, h)
+      image(this.webcam, width - (x + w), y, w, h)
     } else {
       image(this.webcam, x, y, w, h)
     }
@@ -63,9 +63,9 @@ class PoseDetector {
   drawMask(x, y, w, h) {
     push()
     if (this.flipHorizontal) {
-      translate(x + w, y)
+      translate(width, 0)
       scale(-1, 1)
-      image(this.mask, 0, 0, -w, h)
+      image(this.mask, width - (x + w), y, w, h)
     } else {
       image(this.mask, x, y, w, h)
     }
