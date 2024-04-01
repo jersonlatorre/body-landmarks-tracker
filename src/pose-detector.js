@@ -5,6 +5,42 @@ import * as bodySegmentation from '@tensorflow-models/body-segmentation'
 import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
+const keypointsNames = {
+  0: 'nose',
+  1: 'rightEyeInner',
+  2: 'rightEye',
+  3: 'rightEyeOuter',
+  4: 'leftEyeInner',
+  5: 'leftEye',
+  6: 'leftEyeOuter',
+  7: 'rightEar',
+  8: 'leftEar',
+  9: 'mouthRight',
+  10: 'mouthLeft',
+  11: 'rightShoulder',
+  12: 'leftShoulder',
+  13: 'rightElbow',
+  14: 'leftElbow',
+  15: 'rightWrist',
+  16: 'leftWrist',
+  17: 'rightPinky',
+  18: 'leftPinky',
+  19: 'rightIndex',
+  20: 'leftIndex',
+  21: 'rightThumb',
+  22: 'leftThumb',
+  23: 'rightHip',
+  24: 'leftHip',
+  25: 'rightKnee',
+  26: 'leftKnee',
+  27: 'rightAnkle',
+  28: 'leftAnkle',
+  29: 'rightHeel',
+  30: 'leftHeel',
+  31: 'rightFootIndex',
+  32: 'leftFootIndex',
+}
+
 class PoseDetector {
   constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 0 }, maskColorB = { r: 255, g: 255, b: 255, a: 255 } } = {}) {
     this.isWebcamLoaded = false
@@ -85,9 +121,13 @@ class PoseDetector {
       const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
+          const keypointName = keypointsNames[kp.id]
           if (kp.score > 0.8) {
-            acc[kp.name] = kp
-            if (this.flipHorizontal) acc[kp.name].x = width - kp.x
+            acc[keypointName] = {
+              ...kp,
+              name: keypointName,
+            }
+            if (this.flipHorizontal) acc[keypointName].x = width - kp.x
           }
           return acc
         }, {})
