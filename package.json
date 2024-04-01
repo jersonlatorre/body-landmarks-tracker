@@ -1,6 +1,6 @@
 {
   "name": "pose-detector",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "source": "src/pose-detector.js",
   "main": "dist/pose-detector.js",
   "license": "MIT",
