@@ -85,8 +85,8 @@ class PoseDetector {
       const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
+          const camelCaseName = toCamelCase(kp.name)
           if (kp.score > 0.8) {
-            const camelCaseName = toCamelCase(kp.name)
             acc[camelCaseName] = {
               x: this.flipHorizontal ? width - kp.x : kp.x,
               y: kp.y,
