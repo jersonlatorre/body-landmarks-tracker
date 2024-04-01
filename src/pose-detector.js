@@ -86,9 +86,14 @@ class PoseDetector {
       if (poses.length > 0) {
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
           if (kp.score > 0.8) {
-            const camelCaseName = toCamelCase(kp.name) // Convierte el nombre a camelCase
-            acc[camelCaseName] = kp
-            if (this.flipHorizontal) acc[camelCaseName].x = width - kp.x
+            const camelCaseName = toCamelCase(kp.name)
+            acc[camelCaseName] = {
+              x: this.flipHorizontal ? width - kp.x : kp.x,
+              y: kp.y,
+              score: kp.score,
+            }
+          } else {
+            acc[camelCaseName] = null
           }
           return acc
         }, {})
