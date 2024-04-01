@@ -33,7 +33,7 @@ class PoseDetector {
     this.mask = createGraphics(320, 240)
 
     poseDetection
-      .createDetector(poseDetection.SupportedModels.BlazePose, {
+      .createDetector(poseDetection.SupportedModels.MoveNet, {
         runtime: 'tfjs',
         modelType: 'full',
         enableSegmentation: true,
