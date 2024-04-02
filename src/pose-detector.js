@@ -102,6 +102,7 @@ class PoseDetector {
         if (segmentation) {
           const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, true, 0.7)
           if (maskAux?.data.length > 0) {
+            console.log('mask', maskAux)
             this.mask.resizeCanvas(maskAux.width, maskAux.height)
             this.mask.clear()
             this.mask.loadPixels()
