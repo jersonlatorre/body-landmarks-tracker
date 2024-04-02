@@ -6,7 +6,7 @@ import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
-  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 0 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
+  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 0 }, maskColorB = { r: 0, g: 0, b: 0, a: 255 } } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
     this.pose = null
@@ -29,7 +29,7 @@ class PoseDetector {
       console.log('Webcam loaded')
       this.startDetection()
     })
-    this.webcam.size(640, 480).hide()
+    this.webcam.size(320, 240).hide()
     this.mask = createGraphics(320, 240)
 
     poseDetection
@@ -82,9 +82,7 @@ class PoseDetector {
     if (!this.isWebcamLoaded || !this.isDetectorLoaded) return
 
     try {
-      const poses = await this.detector.estimatePoses(this.webcam.elt, {
-        enableSmoothing: true,
-      })
+      const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
           const camelCaseName = toCamelCase(kp.name)
