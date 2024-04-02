@@ -29,7 +29,7 @@ class PoseDetector {
       console.log('Webcam loaded')
       this.startDetection()
     })
-    this.webcam.size(320, 240).hide()
+    this.webcam.size(640, 480).hide()
     this.mask = createGraphics(320, 240)
 
     poseDetection
@@ -100,8 +100,9 @@ class PoseDetector {
 
         const segmentation = poses[0].segmentation
         if (segmentation) {
-          const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, true, 0.5)
+          const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, true, 0.7)
           if (maskAux?.data.length > 0) {
+            this.mask.resizeCanvas(maskAux.width, maskAux.height)
             this.mask.clear()
             this.mask.loadPixels()
             this.mask.pixels.set(maskAux.data)
