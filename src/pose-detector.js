@@ -82,7 +82,9 @@ class PoseDetector {
     if (!this.isWebcamLoaded || !this.isDetectorLoaded) return
 
     try {
-      const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
+      const poses = await this.detector.estimatePoses(this.webcam.elt, {
+        enableSmoothing: true,
+      })
       if (poses.length > 0) {
         this.pose = poses[0].keypoints.reduce((acc, kp) => {
           const camelCaseName = toCamelCase(kp.name)
