@@ -6,17 +6,18 @@ import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
-  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 255 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
+  constructor({ flipHorizontal = true } = {}) {
+    // constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 255 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
     this.pose = null
-    this.mask = null
+    // this.mask = null
     this.webcam = null
     this.detector = null
 
     this.flipHorizontal = flipHorizontal
-    this.maskColorA = maskColorA
-    this.maskColorB = maskColorB
+    // this.maskColorA = maskColorA
+    // this.maskColorB = maskColorB
 
     this.initResources()
   }
@@ -60,17 +61,17 @@ class PoseDetector {
     pop()
   }
 
-  drawMask(x = 0, y = 0, w = width, h = height) {
-    push()
-    if (this.flipHorizontal) {
-      translate(width, 0)
-      scale(-1, 1)
-      image(this.mask, width - (x + w), y, w, h)
-    } else {
-      image(this.mask, x, y, w, h)
-    }
-    pop()
-  }
+  // drawMask(x = 0, y = 0, w = width, h = height) {
+  //   push()
+  //   if (this.flipHorizontal) {
+  //     translate(width, 0)
+  //     scale(-1, 1)
+  //     image(this.mask, width - (x + w), y, w, h)
+  //   } else {
+  //     image(this.mask, x, y, w, h)
+  //   }
+  //   pop()
+  // }
 
   startDetection() {
     if (this.isWebcamLoaded && this.isDetectorLoaded) {
@@ -98,16 +99,16 @@ class PoseDetector {
           return acc
         }, {})
 
-        const segmentation = poses[0].segmentation
-        if (segmentation) {
-          const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, false, 0.7)
-          if (maskAux?.data.length > 0) {
-            this.mask.clear()
-            this.mask.loadPixels()
-            this.mask.pixels.set(maskAux.data)
-            this.mask.updatePixels()
-          }
-        }
+        // const segmentation = poses[0].segmentation
+        // if (segmentation) {
+        //   const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, false, 0.7)
+        //   if (maskAux?.data.length > 0) {
+        //     this.mask.clear()
+        //     this.mask.loadPixels()
+        //     this.mask.pixels.set(maskAux.data)
+        //     this.mask.updatePixels()
+        //   }
+        // }
       }
 
       tf.dispose(poses)
