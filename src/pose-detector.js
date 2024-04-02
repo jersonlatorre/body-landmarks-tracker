@@ -6,7 +6,7 @@ import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
-  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 0 }, maskColorB = { r: 0, g: 0, b: 0, a: 255 } } = {}) {
+  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 255 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
     this.pose = null
@@ -100,10 +100,8 @@ class PoseDetector {
 
         const segmentation = poses[0].segmentation
         if (segmentation) {
-          const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, true, 0.7)
+          const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, false, 0.7)
           if (maskAux?.data.length > 0) {
-            console.log('mask', maskAux)
-            this.mask.resizeCanvas(maskAux.width, maskAux.height)
             this.mask.clear()
             this.mask.loadPixels()
             this.mask.pixels.set(maskAux.data)
