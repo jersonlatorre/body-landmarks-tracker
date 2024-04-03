@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "parcel build ./src/pose-detector.js --dist-dir ./dist",
-    "publish-npm": "bash scripts/publish.sh",
+    "publish": "bash scripts/publish.sh",
     "test": "bash scripts/test.sh"
   },
   "type": "module",

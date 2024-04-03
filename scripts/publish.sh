@@ -18,8 +18,12 @@ node_modules/.bin/parcel build ./src/pose-detector.js --dist-dir ./dist
 echo "Añadiendo cambios..."
 git add .
 
+# Pedir al usuario que ingrese el mensaje del commit
+echo "Por favor, ingresa el mensaje del commit:"
+read commitMessage
+
 echo "Creando commit..."
-git commit -m 'Build for new release'
+git commit -m "$commitMessage"
 
 echo "Empujando cambios..."
 git push

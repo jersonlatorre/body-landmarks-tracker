@@ -1,22 +1,16 @@
 import '@tensorflow/tfjs-backend-webgl'
 import '@mediapipe/pose'
 
-import * as bodySegmentation from '@tensorflow-models/body-segmentation'
 import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
-  constructor({ flipHorizontal = true, maskColorA = { r: 0, g: 0, b: 0, a: 255 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
+  constructor({ flipHorizontal = true } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
-    this.pose = null
-    this.mask = null
     this.webcam = null
     this.detector = null
-
     this.flipHorizontal = flipHorizontal
-    this.maskColorA = maskColorA
-    this.maskColorB = maskColorB
 
     this.initResources()
   }
@@ -29,12 +23,12 @@ class PoseDetector {
       console.log('Webcam loaded')
       this.startDetection()
     })
-    this.webcam.size(640, 480).hide()
-    this.mask = createGraphics(320, 240)
+      .size(width, height)
+      .hide()
 
     poseDetection
       .createDetector(poseDetection.SupportedModels.BlazePose, {
-        runtime: 'tfjs',
+        runtime: 'mediapipe',
         modelType: 'full',
         enableSegmentation: true,
         maxPoses: 1,
@@ -60,18 +54,6 @@ class PoseDetector {
     pop()
   }
 
-  drawMask(x = 0, y = 0, w = width, h = height) {
-    push()
-    if (this.flipHorizontal) {
-      translate(width, 0)
-      scale(-1, 1)
-      image(this.mask, width - (x + w), y, w, h)
-    } else {
-      image(this.mask, x, y, w, h)
-    }
-    pop()
-  }
-
   startDetection() {
     if (this.isWebcamLoaded && this.isDetectorLoaded) {
       this.detectPose()
@@ -84,30 +66,16 @@ class PoseDetector {
     try {
       const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
-        this.pose = poses[0].keypoints.reduce((acc, kp) => {
-          const camelCaseName = toCamelCase(kp.name)
+        poses[0].keypoints.forEach((kp) => {
           if (kp.score > 0.8) {
-            acc[camelCaseName] = {
-              x: this.flipHorizontal ? width - kp.x : kp.x,
+            const camelCaseName = toCamelCase(kp.name)
+            this[camelCaseName] = {
+              x: this.flipHorizontal ? 640 - kp.x : kp.x,
               y: kp.y,
               score: kp.score,
             }
-          } else {
-            acc[camelCaseName] = null
           }
-          return acc
-        }, {})
-
-        const segmentation = poses[0].segmentation
-        if (segmentation) {
-          const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, false, 0.7)
-          if (maskAux?.data.length > 0) {
-            this.mask.clear()
-            this.mask.loadPixels()
-            this.mask.pixels.set(maskAux.data)
-            this.mask.updatePixels()
-          }
-        }
+        })
       }
 
       tf.dispose(poses)
