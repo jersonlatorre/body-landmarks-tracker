@@ -5,12 +5,14 @@ import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
-  constructor({ flipHorizontal = true } = {}) {
+  constructor({ flipHorizontal = true, cameraWidth = 640, cameraHeight = 480 } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
     this.webcam = null
     this.detector = null
     this.flipHorizontal = flipHorizontal
+    this.cameraWidth = cameraWidth
+    this.cameraHeight = cameraHeight
 
     this.initResources()
   }
@@ -23,7 +25,7 @@ class PoseDetector {
       console.log('Webcam loaded')
       this.startDetection()
     })
-      .size(width, height)
+      .size(this.cameraWidth, this.cameraHeight)
       .hide()
 
     poseDetection
@@ -67,15 +69,39 @@ class PoseDetector {
       const poses = await this.detector.estimatePoses(this.webcam.elt, { enableSmoothing: true })
       if (poses.length > 0) {
         poses[0].keypoints.forEach((kp) => {
+          const camelCaseName = toCamelCase(kp.name)
           if (kp.score > 0.8) {
-            const camelCaseName = toCamelCase(kp.name)
+            const scaledX = kp.x * (width / this.cameraWidth)
+            const scaledY = kp.y * (height / this.cameraHeight)
             this[camelCaseName] = {
-              x: this.flipHorizontal ? 640 - kp.x : kp.x,
-              y: kp.y,
+              x: this.flipHorizontal ? width - scaledX : scaledX,
+              y: scaledY,
               score: kp.score,
             }
+          } else {
+            this[camelCaseName] = null
           }
         })
+
+        // Calcula neckBase si ambos hombros están disponibles
+        if (this['leftShoulder'] && this['rightShoulder']) {
+          this.neckBase = {
+            x: (this['leftShoulder'].x + this['rightShoulder'].x) / 2,
+            y: (this['leftShoulder'].y + this['rightShoulder'].y) / 2,
+          }
+        } else {
+          delete this.neckBase
+        }
+
+        // Calcula pelvis si ambas caderas están disponibles
+        if (this['leftHip'] && this['rightHip']) {
+          this.pelvis = {
+            x: (this['leftHip'].x + this['rightHip'].x) / 2,
+            y: (this['leftHip'].y + this['rightHip'].y) / 2,
+          }
+        } else {
+          delete this.pelvis
+        }
       }
 
       tf.dispose(poses)
@@ -83,6 +109,22 @@ class PoseDetector {
     } catch (error) {
       console.error('Error detecting pose:', error)
     }
+  }
+
+  distanceBetween(name1, name2) {
+    let p1 = this[name1]
+    let p2 = this[name2]
+    if (!p1 || !p2) return 0
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
+  }
+
+  directionBetween(name1, name2) {
+    let p1 = this[name1]
+    let p2 = this[name2]
+    if (!p1 || !p2) return 0
+    let angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
+    console.log(angle)
+    return map(angle, -Math.PI / 2, Math.PI / 2, -1, 1)
   }
 }
 

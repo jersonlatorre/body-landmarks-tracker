@@ -7,7 +7,7 @@
   "scripts": {
     "build": "parcel build ./src/pose-detector.js --dist-dir ./dist",
     "publish": "bash scripts/publish.sh",
-    "test": "bash scripts/test.sh"
+    "export": "bash scripts/export.sh"
   },
   "type": "module",
   "targets": {
