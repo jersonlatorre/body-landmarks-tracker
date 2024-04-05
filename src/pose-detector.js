@@ -1,18 +1,23 @@
 import '@tensorflow/tfjs-backend-webgl'
 import '@mediapipe/pose'
 
+// import * as bodySegmentation from '@tensorflow-models/body-segmentation'
 import * as poseDetection from '@tensorflow-models/pose-detection'
 import * as tf from '@tensorflow/tfjs-core'
 
 class PoseDetector {
+  // constructor({ flipHorizontal = true, cameraWidth = 640, cameraHeight = 480, maskColorA = { r: 0, g: 0, b: 0, a: 255 }, maskColorB = { r: 0, g: 0, b: 0, a: 0 } } = {}) {
   constructor({ flipHorizontal = true, cameraWidth = 640, cameraHeight = 480 } = {}) {
     this.isWebcamLoaded = false
     this.isDetectorLoaded = false
     this.webcam = null
     this.detector = null
-    this.flipHorizontal = flipHorizontal
     this.cameraWidth = cameraWidth
     this.cameraHeight = cameraHeight
+    this.flipHorizontal = flipHorizontal
+    // this.maskColorA = maskColorA
+    // this.maskColorB = maskColorB
+    // this.mask
 
     this.initResources()
   }
@@ -27,6 +32,8 @@ class PoseDetector {
     })
       .size(this.cameraWidth, this.cameraHeight)
       .hide()
+
+    this.mask = createGraphics(320, 240)
 
     poseDetection
       .createDetector(poseDetection.SupportedModels.BlazePose, {
@@ -43,6 +50,18 @@ class PoseDetector {
         this.startDetection()
       })
   }
+
+  // drawMask(x = 0, y = 0, w = width, h = height) {
+  //   push()
+  //   if (this.flipHorizontal) {
+  //     translate(width, 0)
+  //     scale(-1, 1)
+  //     image(this.mask, width - (x + w), y, w, h)
+  //   } else {
+  //     image(this.mask, x, y, w, h)
+  //   }
+  //   pop()
+  // }
 
   drawWebcam(x = 0, y = 0, w = width, h = height) {
     push()
@@ -82,6 +101,17 @@ class PoseDetector {
             this[camelCaseName] = null
           }
         })
+
+        // const segmentation = poses[0].segmentation
+        // if (segmentation) {
+        //   const maskAux = await bodySegmentation.toBinaryMask(segmentation, this.maskColorA, this.maskColorB, false, 0.7)
+        //   if (maskAux?.data.length > 0) {
+        //     this.mask.clear()
+        //     this.mask.loadPixels()
+        //     this.mask.pixels.set(maskAux.data)
+        //     this.mask.updatePixels()
+        //   }
+        // }
 
         // Calcula neckBase si ambos hombros están disponibles
         if (this['leftShoulder'] && this['rightShoulder']) {
