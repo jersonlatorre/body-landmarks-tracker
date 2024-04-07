@@ -44,7 +44,7 @@ window.rightFootIndex = null
 window.neckBase = null
 window.pelvis = null
 window.mouth = null
-window.keypoints = []
+window.landmarks = []
 window.inputVideoUrl = null
 
 class BodyTracker {
@@ -117,7 +117,7 @@ class BodyTracker {
     try {
       const poses = await this.detector.estimatePoses(inputVideo.elt, { enableSmoothing: true })
       if (poses.length > 0) {
-        keypoints = []
+        landmarks = []
         poses[0].keypoints.forEach((kp) => {
           let camelCaseName = toCamelCase(kp.name)
           if (kp.score > 0.7) {
@@ -144,7 +144,7 @@ class BodyTracker {
               y: adjustedY,
             }
 
-            keypoints.push({ x: adjustedX, y: adjustedY, name: camelCaseName })
+            landmarks.push({ x: adjustedX, y: adjustedY, name: camelCaseName })
           } else {
             window[camelCaseName] = null
           }
@@ -156,7 +156,7 @@ class BodyTracker {
             x: (leftShoulder.x + rightShoulder.x) / 2,
             y: (leftShoulder.y + rightShoulder.y) / 2,
           }
-          keypoints.push({ x: neckBase.x, y: neckBase.y, name: 'neckBase' })
+          landmarks.push({ x: neckBase.x, y: neckBase.y, name: 'neckBase' })
         } else {
           neckBase = null
         }
@@ -167,7 +167,7 @@ class BodyTracker {
             x: (leftHip.x + rightHip.x) / 2,
             y: (leftHip.y + rightHip.y) / 2,
           }
-          keypoints.push({ x: pelvis.x, y: pelvis.y, name: 'pelvis' })
+          landmarks.push({ x: pelvis.x, y: pelvis.y, name: 'pelvis' })
         } else {
           pelvis = null
         }
@@ -178,7 +178,7 @@ class BodyTracker {
             x: (leftMouth.x + rightMouth.x) / 2,
             y: (leftMouth.y + rightMouth.y) / 2,
           }
-          keypoints.push({ x: mouth.x, y: mouth.y, name: 'mouth' })
+          landmarks.push({ x: mouth.x, y: mouth.y, name: 'mouth' })
         } else {
           mouth = null
         }
@@ -211,32 +211,31 @@ window.drawVideo = (x = 0, y = 0, w = width, h = height) => {
 }
 
 window.drawKeypoints = ({ size = 8, color = 'white' } = {}) => {
-  if (!keypoints) return
+  if (!landmarks) return
   push()
   fill(color)
   noStroke()
-  keypoints.forEach((k) => {
+  landmarks.forEach((lm) => {
     if (
-      k.name === 'leftEyeInner' ||
-      k.name === 'leftEyeOuter' ||
-      k.name === 'rightEyeInner' ||
-      k.name === 'rightEyeOuter' ||
-      k.name === 'leftMouth' ||
-      k.name === 'rightMouth' ||
-      k.name === 'leftPinky' ||
-      k.name === 'rightPinky' ||
-      k.name === 'leftThumb' ||
-      k.name === 'rightThumb'
+      lm.name === 'leftEyeInner' ||
+      lm.name === 'leftEyeOuter' ||
+      lm.name === 'rightEyeInner' ||
+      lm.name === 'rightEyeOuter' ||
+      lm.name === 'leftMouth' ||
+      lm.name === 'rightMouth' ||
+      lm.name === 'leftPinky' ||
+      lm.name === 'rightPinky' ||
+      lm.name === 'leftThumb' ||
+      lm.name === 'rightThumb'
     ) {
     } else {
-      circle(k.x, k.y, size)
+      circle(lm.x, lm.y, size)
     }
   })
   pop()
 }
 
 window.drawSkeleton = ({ thickness = 2, color = 'white' } = {}) => {
-  if (!keypoints) return
   push()
   stroke(color)
   strokeWeight(thickness)
