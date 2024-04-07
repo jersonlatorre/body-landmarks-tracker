@@ -268,6 +268,20 @@ window.drawSkeleton = ({ thickness = 2, color = 'white' } = {}) => {
   pop()
 }
 
+window.drawImageBetween = (img, p1, p2) => {
+  if (!img || !p1 || !p2) return
+
+  let distance = distanceBetween(p1, p2)
+  let angle = Math.atan2(p2.y - p1.y, p2.x - p1.x)
+
+  push()
+  imageMode(CENTER)
+  translate((p1.x + p2.x) / 2, (p1.y + p2.y) / 2)
+  rotate(angle)
+  image(img, 0, 0, distance, (distance * img.height) / img.width)
+  pop()
+}
+
 window.createPoseDetector = ({ url = null, flip = null } = {}) => {
   flip = flip !== null ? flip : url ? false : true
   return new PoseDetector({ url, flip })
