@@ -25,6 +25,7 @@ A library compatible with p5.js for body pose detection.
 
 ## Methods
 
+- `createBodyTracker()`: Creates a new body tracker.
 - `drawLandmarks()`: Visualizes the detected body landmarks on the canvas.
 - `drawVideo(x = 0, y = 0, w = width, h = height)`: Draws the video feed on the canvas. Can be customized with position and size.
 - `distanceBetween(p1, p2)`: Returns the Euclidean distance between landmarks `p1` and `p2`.
