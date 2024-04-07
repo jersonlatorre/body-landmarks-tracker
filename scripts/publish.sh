@@ -13,7 +13,7 @@ fi
 
 # Si hay cambios, proceder con el proceso de compilación, add, commit, y push
 echo "Compilando..."
-node_modules/.bin/parcel build ./src/pose-detector.js --dist-dir ./dist
+node_modules/.bin/parcel build ./src/body-tracker.js --dist-dir ./dist
 
 echo "Añadiendo cambios..."
 git add .
