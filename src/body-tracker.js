@@ -210,7 +210,7 @@ window.drawVideo = (x = 0, y = 0, w = width, h = height) => {
   pop()
 }
 
-window.drawKeypoints = ({ size = 8, color = 'white' } = {}) => {
+window.drawLandmarks = ({ size = 8, color = 'white' } = {}) => {
   if (!landmarks) return
   push()
   fill(color)
